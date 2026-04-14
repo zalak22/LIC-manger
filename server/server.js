@@ -36,8 +36,8 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-const MONGO_URI =
-  process.env.MONGO_URI || "mongodb://localhost:27017/finance_policies_db";
+const MONGO_URI = process.env.MONGO_URI;
+
 
 mongoose
   .connect(MONGO_URI)
