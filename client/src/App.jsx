@@ -10,10 +10,8 @@ import {
 } from 'lucide-react';
 
 // --- API Configuration ---
- const BASE_URL = process.env.REACT_APP_BACKEND_URL;;
-
 const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: process.env.REACT_APP_BACKEND_URL
 });
 
 // Interceptor to inject token
@@ -64,10 +62,11 @@ const AuthPage = ({ onLogin }) => {
 
   const fetchCaptcha = async () => {
     try {
-      const res = await axios.get(`${BASE_URL.replace('/api', '')}/api/captcha`);
+      const res = await api.get('/captcha');
       setCaptchaId(res.data.captchaId);
       setCaptchaQuestion(res.data.question);
       setCaptchaAnswer('');
+      setError('');
     } catch (err) {
       setError('Failed to load CAPTCHA. Please refresh and try again.');
     }
@@ -84,8 +83,14 @@ const AuthPage = ({ onLogin }) => {
     setLoading(true);
 
     try {
+      if (captchaAnswer === '') {
+        setError('Please solve the CAPTCHA before continuing.');
+        setLoading(false);
+        return;
+      }
+
       if (isLoginMode) {
-        const res = await axios.post(`${BASE_URL}/auth/login`, {
+        const res = await api.post('/auth/login', {
           email,
           password,
           captchaId,
@@ -94,7 +99,7 @@ const AuthPage = ({ onLogin }) => {
         localStorage.setItem('token', res.data.token);
         onLogin();
       } else {
-        await axios.post(`${BASE_URL}/auth/register`, {
+        await api.post('/auth/register', {
           email,
           password,
           captchaId,

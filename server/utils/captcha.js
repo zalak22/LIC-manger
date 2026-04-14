@@ -4,13 +4,39 @@ const CAPTCHA_TTL_MS = 3 * 60 * 1000; // 3 minutes
 const captchaStore = new Map();
 
 function generateCaptcha() {
-  const a = Math.floor(Math.random() * 20) + 1;
-  const b = Math.floor(Math.random() * 20) + 1;
-  const operator = Math.random() < 0.5 ? "+" : "-";
+  const operators = ["+", "-", "*", "/"];
+  const operator = operators[Math.floor(Math.random() * operators.length)];
+  let num1 = Math.floor(Math.random() * 18) + 3; // 3 - 20
+  let num2 = Math.floor(Math.random() * 10) + 1; // 1 - 10
+
+  if (operator === "-") {
+    if (num1 < num2) {
+      [num1, num2] = [num2, num1];
+    }
+  }
+
+  if (operator === "/") {
+    num2 = Math.floor(Math.random() * 10) + 1;
+    const quotient = Math.floor(Math.random() * 10) + 1;
+    num1 = num2 * quotient;
+  }
+
+  const symbolMap = {
+    "+": "+",
+    "-": "-",
+    "*": "x",
+    "/": "/"
+  };
+
+  let answer = 0;
+  if (operator === "+") answer = num1 + num2;
+  if (operator === "-") answer = num1 - num2;
+  if (operator === "*") answer = num1 * num2;
+  if (operator === "/") answer = num1 / num2;
 
   return {
-    question: `${a} ${operator} ${b} = ?`,
-    answer: operator === "+" ? a + b : a - b
+    question: `${num1} ${symbolMap[operator]} ${num2} = ?`,
+    answer
   };
 }
 
