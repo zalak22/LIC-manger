@@ -15,7 +15,7 @@ exports.registerUser = async (req, res) => {
       return res.status(400).json({ message: "Email and password are required" });
     }
 
-    const captchaResult = verifyCaptcha(captchaId, captchaAnswer);
+    const captchaResult = await verifyCaptcha(captchaId, captchaAnswer);
     if (!captchaResult.valid) {
       if (captchaResult.reason === "incorrect") {
         return res.status(400).json({ message: "Incorrect CAPTCHA" });
@@ -55,7 +55,7 @@ exports.loginUser = async (req, res) => {
       return res.status(400).json({ message: "Email and password are required" });
     }
 
-    const captchaResult = verifyCaptcha(captchaId, captchaAnswer);
+    const captchaResult = await verifyCaptcha(captchaId, captchaAnswer);
     if (!captchaResult.valid) {
       if (captchaResult.reason === "incorrect") {
         return res.status(400).json({ message: "Incorrect CAPTCHA" });

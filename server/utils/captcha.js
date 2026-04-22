@@ -1,7 +1,7 @@
 const { randomUUID } = require("crypto");
+const CaptchaRound = require("../models/CaptchaRound");
 
 const CAPTCHA_TTL_MS = 3 * 60 * 1000; // 3 minutes
-const captchaStore = new Map();
 
 function generateCaptcha() {
   const operators = ["+", "-", "*", "/"];
@@ -40,27 +40,28 @@ function generateCaptcha() {
   };
 }
 
-function createCaptcha() {
+async function createCaptcha() {
   const { question, answer } = generateCaptcha();
   const captchaId = randomUUID();
 
-  captchaStore.set(captchaId, {
+  await CaptchaRound.create({
+    _id: captchaId,
     answer,
-    expiresAt: Date.now() + CAPTCHA_TTL_MS
+    expiresAt: new Date(Date.now() + CAPTCHA_TTL_MS)
   });
 
   return { captchaId, question };
 }
 
-function verifyCaptcha(captchaId, captchaAnswer) {
+async function verifyCaptcha(captchaId, captchaAnswer) {
   if (!captchaId || captchaAnswer === undefined || captchaAnswer === null) {
     return { valid: false, reason: "missing" };
   }
 
-  const entry = captchaStore.get(captchaId);
-  captchaStore.delete(captchaId); // one-time use
+  // Delete on lookup to enforce one-time use even when answer is incorrect.
+  const entry = await CaptchaRound.findByIdAndDelete(captchaId).lean();
 
-  if (!entry || entry.expiresAt < Date.now()) {
+  if (!entry || new Date(entry.expiresAt).getTime() < Date.now()) {
     return { valid: false, reason: "expired_or_invalid" };
   }
 
@@ -71,13 +72,6 @@ function verifyCaptcha(captchaId, captchaAnswer) {
 
   return { valid: true };
 }
-
-setInterval(() => {
-  const now = Date.now();
-  for (const [captchaId, entry] of captchaStore.entries()) {
-    if (entry.expiresAt < now) captchaStore.delete(captchaId);
-  }
-}, 60 * 1000).unref();
 
 module.exports = {
   createCaptcha,
