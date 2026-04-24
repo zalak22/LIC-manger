@@ -10,9 +10,9 @@ const signToken = (id) => jwt.sign({ id }, JWT_SECRET, { expiresIn: JWT_EXPIRE }
 
 exports.registerUser = async (req, res) => {
   try {
-    const { email, password, captchaId, captchaAnswer } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({ message: "Email and password are required" });
+    const { username, email, password, captchaId, captchaAnswer } = req.body;
+    if (!username || !email || !password) {
+      return res.status(400).json({ message: "Username, email, and password are required" });
     }
 
     const captchaResult = await verifyCaptcha(captchaId, captchaAnswer);
@@ -28,9 +28,16 @@ exports.registerUser = async (req, res) => {
       return res.status(400).json({ message: "Email already registered" });
     }
 
+    const normalizedUsername = username.trim();
+    const existingUsername = await Admin.findOne({ username: normalizedUsername });
+    if (existingUsername) {
+      return res.status(400).json({ message: "Username already taken" });
+    }
+
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     const admin = await Admin.create({
+      username: normalizedUsername,
       email: email.toLowerCase(),
       password: hashedPassword
     });
@@ -40,6 +47,7 @@ exports.registerUser = async (req, res) => {
       token: signToken(admin._id),
       admin: {
         id: admin._id,
+        username: admin.username,
         email: admin.email
       }
     });
@@ -79,6 +87,7 @@ exports.loginUser = async (req, res) => {
       token,
       admin: {
         id: admin._id,
+        username: admin.username,
         email: admin.email
       }
     });

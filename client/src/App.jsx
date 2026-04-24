@@ -48,9 +48,10 @@ const ErrorMessage = ({ message, onRetry }) => (
   </div>
 );
 
-// --- 0. Auth Page ---
+// --- 0. Auth Page --- 
 const AuthPage = ({ onLogin }) => {
   const [isLoginMode, setIsLoginMode] = useState(true);
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [captchaId, setCaptchaId] = useState('');
@@ -100,6 +101,7 @@ const AuthPage = ({ onLogin }) => {
         onLogin();
       } else {
         await api.post('/auth/register', {
+          username,
           email,
           password,
           captchaId,
@@ -107,6 +109,7 @@ const AuthPage = ({ onLogin }) => {
         });
         setSuccessMsg('Registration successful! You can now log in.');
         setIsLoginMode(true);
+        setUsername('');
         setPassword('');
       }
     } catch (err) {
@@ -147,6 +150,19 @@ const AuthPage = ({ onLogin }) => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
+          {!isLoginMode && (
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1.5">Username</label>
+              <input
+                type="text"
+                required={!isLoginMode}
+                className="w-full border border-slate-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 outline-none transition-all text-slate-800 bg-slate-50/50"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="your_username"
+              />
+            </div>
+          )}
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-1.5">Email Address</label>
             <input
@@ -200,7 +216,12 @@ const AuthPage = ({ onLogin }) => {
           {isLoginMode ? "Don't have an account? " : "Already have an account? "}
           <button
             type="button"
-            onClick={() => { setIsLoginMode(!isLoginMode); setError(''); setSuccessMsg(''); }}
+            onClick={() => {
+              setIsLoginMode(!isLoginMode);
+              setError('');
+              setSuccessMsg('');
+              setUsername('');
+            }}
             className="text-blue-600 font-semibold hover:text-blue-700 transition-colors"
           >
             {isLoginMode ? 'Register here' : 'Log in here'}
