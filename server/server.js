@@ -11,12 +11,14 @@ const userRoutes = require("./routes/userRoutes");
 const policyRoutes = require("./routes/policyRoutes");
 const installmentRoutes = require("./routes/installmentRoutes");
 const exportRoutes = require("./routes/exportRoutes");
+const { globalLimiter } = require("./middleware/rateLimiters");
 
 const app = express();
 
 // middleware
 app.use(express.json());
 app.use(cors({ origin: "*" }));
+app.use(globalLimiter);
 
 // routes
 app.use(authRoutes);

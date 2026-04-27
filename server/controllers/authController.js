@@ -3,8 +3,12 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { verifyCaptcha } = require("../utils/captcha");
 
-const JWT_SECRET = process.env.JWT_SECRET || "super_secret_jwt_key_123";
-const JWT_EXPIRE = process.env.JWT_EXPIRE || "7d";
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_EXPIRE = process.env.JWT_EXPIRE || "1h";
+
+if (!JWT_SECRET) {
+  throw new Error("JWT_SECRET is required in environment variables");
+}
 
 const signToken = (id) => jwt.sign({ id }, JWT_SECRET, { expiresIn: JWT_EXPIRE });
 

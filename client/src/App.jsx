@@ -23,6 +23,25 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Auto-logout on expired/invalid token responses from protected endpoints.
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error?.response?.status;
+    const requestUrl = error?.config?.url || '';
+    const isAuthRequest = requestUrl.includes('/auth/login') || requestUrl.includes('/auth/register');
+
+    if (status === 401 && !isAuthRequest) {
+      localStorage.removeItem('token');
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('auth:expired'));
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
@@ -1383,6 +1402,20 @@ export default function App() {
     setSelectedPolicy(null);
     setIsDropdownOpen(false);
   };
+
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      setIsAuthenticated(false);
+      setCurrentView('DASHBOARD');
+      setSelectedUser(null);
+      setSelectedPolicy(null);
+      setIsDropdownOpen(false);
+      setIsSidebarOpen(false);
+    };
+
+    window.addEventListener('auth:expired', handleSessionExpired);
+    return () => window.removeEventListener('auth:expired', handleSessionExpired);
+  }, []);
 
   if (!isAuthenticated) {
     return <AuthPage onLogin={() => setIsAuthenticated(true)} />;
