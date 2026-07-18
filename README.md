@@ -1,40 +1,45 @@
 # 📊 Installment Tracker – Smart EMI Monitoring Dashboard
 
-A full-stack MERN web application designed for LIC and Post Office agents to efficiently manage policyholders, monitor installment payments, and track pending EMIs from a centralized dashboard.
-
----
+A MERN Stack web application developed for LIC and Post Office agents to manage policyholders and track monthly installment payments efficiently.
 
 ## 🚀 Features
 
-- 🔐 Secure Agent Authentication (JWT + Bcrypt)
-- 👤 Add, Edit, Delete Policyholders
-- 📅 Automatic Monthly Installment Generation
-- 💰 Track Paid & Pending Installments
-- 📊 Dashboard with Key Statistics
-- 🔍 Search & Filter Policyholders
-- 📱 Responsive User Interface
-- 🛡️ Protected Routes
-- ⚡ REST API Architecture
-
----
+- Secure Login Authentication
+- Add, Edit & Delete Policyholders
+- Automatic Installment Tracking
+- Dashboard with Payment Statistics
+- Search & Filter Records
+- Responsive User Interface
 
 ## 🛠️ Tech Stack
 
-### Frontend
 - React.js
-- Vite
-- Tailwind CSS
-- React Router
-- Axios
-
-### Backend
 - Node.js
 - Express.js
-- MongoDB Atlas
-- Mongoose
+- MongoDB
+- Tailwind CSS
 - JWT Authentication
-- Bcrypt
+
+## ▶️ Run the Project
+
+### Backend
+```bash
+cd server
+npm install
+npm run dev
+```
+
+### Frontend
+```bash
+cd client
+npm install
+npm run dev
+```
+
+## 📌 Purpose
+
+This project simplifies installment management by helping agents track payments, manage customer records, and monitor pending installments from a single dashboard.
 
 ---
 
-## 📂 Project Structure
+**Developed by:** Zalak Raj
