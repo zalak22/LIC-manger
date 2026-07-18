@@ -38,8 +38,7 @@ npm run dev
 
 ## 📌 Purpose
 
-This project simplifies installment management by helping agents track payments, manage customer records, and monitor pending installments from a single dashboard.
-
+This project is for solving the problem of LIC Agents/Post Agents.To minimze the paper works and make the life more eaasier.
 ---
 
-**Developed by:** Zalak Raj
+**Developed by:** Zalak Raj 
